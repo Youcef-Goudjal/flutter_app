@@ -13,8 +13,13 @@ class DatabaseHelper {
   static final _dbName = 'Data.db';
   static final _dbVersion = 1;
   static final _tableName = 'Lists';
+  static final _tablePerson = 'Person';
   static final columnId = '_id';
   static final columnName = 'name';
+  static final columnlandmark = 'landmark';
+  static final columnface = 'face';
+  static final columnemail = 'email';
+  static final columnlistid = 'list_ID';
 
   static Database _database;
 
@@ -37,11 +42,22 @@ class DatabaseHelper {
   }
 
   Future _onCreate(Database db, int version) {
-    db.execute( '''
+    db.execute('''
       CREATE TABLE $_tableName (
       $columnId INTEGER PRIMARY KEY,
       $columnName TEXT NOT NULL )
       ''');
+
+    db.execute('''
+    CREATE TABLE $_tablePerson (
+    $columnId INTEGER PRIMARY KEY,
+    $columnName TEXT NOT NULL,
+    $columnface TEXT,
+    $columnlandmark  TEXT,
+    $columnlistid  INTEGER,
+    FOREIGN KEY ($columnlistid) REFERENCES $_tableName($columnId)
+    )
+    ''');
   }
 
   Future<int> insert(Map<String, dynamic> row) async {
@@ -49,6 +65,18 @@ class DatabaseHelper {
     return await db.insert(_tableName, row);
   }
 
+  /*
+    db.execute('''
+    CREATE TABLE $group (
+    $columnId INTEGER PRIMARY KEY,
+    $columnName TEXT NOT NULL,
+    $columnface Text,
+    $columnlandmark
+    )
+    ''');//TODO: landmark type ???
+    //array [1..132] {dx : float , dy: float}
+    * */
+// Lists table function
   Future<List<Map<String, dynamic>>> queryAll() async {
     Database db = await instance.database;
     return await db.query(_tableName);
@@ -63,5 +91,32 @@ class DatabaseHelper {
   Future<int> delete(int id) async {
     Database db = await instance.database;
     return db.delete(_tableName, where: '$columnId = ? ', whereArgs: [id]);
+  }
+
+  // Person table function
+  Future<List<Map<String, dynamic>>> PqueryAll() async {
+    Database db = await instance.database;
+    return await db.query(_tablePerson);
+  }
+
+  Future<List<Map<String, dynamic>>> PGqueryAll(int list_id) async {
+    Database db = await instance.database;
+    return await db
+        .query(_tablePerson, where: '$columnlistid = ?', whereArgs: [list_id]);
+  }
+  Future<int> Pinsert(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db.insert(_tablePerson, row);
+  }
+
+  Future<int> Pupdate(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    int id = row[columnId];
+    return db.update(_tablePerson, row, where: '$columnId = ? ', whereArgs: [id]);
+  }
+
+  Future<int> Pdelete(int id) async {
+    Database db = await instance.database;
+    return db.delete(_tablePerson, where: '$columnId = ? ', whereArgs: [id]);
   }
 }

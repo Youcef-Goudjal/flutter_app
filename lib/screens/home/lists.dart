@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/screens/home/detail.dart';
 import 'package:flutterapp/services/db_helper.dart';
 import 'package:flutterapp/shared/global.dart';
 import 'package:flutterapp/widgets/loading_list.dart';
@@ -183,6 +184,15 @@ class _MyListPageState extends State<MyListPage> {
                     child: ListTile(
                       onTap: () {
                         // navigate to detail page
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => DetailPage(
+                                      group: list[index - 1]
+                                          [DatabaseHelper.columnName],
+                                      id: list[index - 1]
+                                          [DatabaseHelper.columnId],
+                                    )));
                       },
                       contentPadding: EdgeInsets.only(top: 6),
                       leading: CircleAvatar(
